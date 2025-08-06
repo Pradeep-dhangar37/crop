@@ -5,6 +5,7 @@ import HomeScreen from '../screens/auth/home/HomeScreen';
 // import NewsScreen from '../screens/home/NewsScreen';
 import Icon from 'react-native-vector-icons/Ionicons';
 import NewsScreen from '../screens/auth/news/NewsScreen';
+import ProfileScreen from '../screens/auth/home/ProfileScreen';
 // import NewsScreen from '../screens/auth/news/NewsScreen';
 // import NewsScreen from '../screens/auth/home/NewsScreen';
 
@@ -31,6 +32,13 @@ export default function BottomTabNavigator() {
         component={NewsScreen}
         options={{
           tabBarIcon: ({ color, size }) => <Icon name="newspaper" color={color} size={size} />,
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => <Icon name="person" color={color} size={size} />,
         }}
       />
     </Tab.Navigator>

@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AuthStack from './navigation/AuthStack';
 import DashboardScreen from './screens/auth/home/DashboardScreen';
 import NewsDetailScreen from './screens/auth/news/NewsDetail';
+import WeatherDetailScreen from './screens/auth/weather/WeatherDetailScreen';
 // import DashboardScreen from './screens/home/DashboardScreen';
 
 const Stack = createNativeStackNavigator();
@@ -16,6 +17,7 @@ export default function AppNavigator() {
         <Stack.Screen name="Auth" component={AuthStack} />
         <Stack.Screen name="Dashboard" component={DashboardScreen}/>
         <Stack.Screen name='NewsDetail' component={NewsDetailScreen}/>
+        <Stack.Screen name="WeatherDetail" component={WeatherDetailScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

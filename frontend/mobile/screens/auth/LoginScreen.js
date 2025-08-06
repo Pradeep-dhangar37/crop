@@ -32,7 +32,7 @@ export default function LoginScreen({navigation}) {
         }
       
         // ✅ Actual login logic
-        if (mobile === '1234567890' && password === 'password') {
+        if (mobile === '1234567890' && password === '123') {
           navigation.replace('Dashboard', { mobile }); // navigate to dashboard
         } else {
           Alert.alert('Login Failed', 'Invalid mobile number or password');
