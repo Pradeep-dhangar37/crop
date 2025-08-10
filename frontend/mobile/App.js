@@ -1,23 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import AuthStack from './navigation/AuthStack';
-import DashboardScreen from './screens/auth/home/DashboardScreen';
-import NewsDetailScreen from './screens/auth/news/NewsDetail';
-import WeatherDetailScreen from './screens/auth/weather/WeatherDetailScreen';
-// import DashboardScreen from './screens/home/DashboardScreen';
+import MainStack from './navigation/MainStack';
 
 const Stack = createNativeStackNavigator();
 
-export default function AppNavigator() {
+export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Auth" component={AuthStack} />
-        <Stack.Screen name="Dashboard" component={DashboardScreen}/>
-        <Stack.Screen name='NewsDetail' component={NewsDetailScreen}/>
-        <Stack.Screen name="WeatherDetail" component={WeatherDetailScreen} />
+        {isLoggedIn ? (
+          <Stack.Screen name="Main">
+            {(props) => <MainStack {...props} />}
+          </Stack.Screen>
+        ) : (
+          <Stack.Screen name="Auth">
+            {(props) => <AuthStack {...props} setIsLoggedIn={setIsLoggedIn} />}
+          </Stack.Screen>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );

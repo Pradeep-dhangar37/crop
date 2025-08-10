@@ -10,35 +10,29 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-export default function LoginScreen({navigation}) {
+export default function LoginScreen({ setIsLoggedIn, navigation }) {
   const [mobile, setMobile] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  
-      
-    // // Replace this with actual login logic / API call
-    // console.log('Logging in with:', { mobile, password });
-    // Alert.alert('Success', 'Logged in successfully!');
-    const handleLogin = () => {
-        if (!mobile || !password) {
-          Alert.alert('Missing Fields', 'Please enter both mobile number and password');
-          return;
-        }
-      
-        if (mobile.length !== 10 || !/^\d+$/.test(mobile)) {
-          Alert.alert('Invalid Mobile', 'Enter a valid 10-digit mobile number');
-          return;
-        }
-      
-        // ✅ Actual login logic
-        if (mobile === '1234567890' && password === '123') {
-          navigation.replace('Dashboard', { mobile }); // navigate to dashboard
-        } else {
-          Alert.alert('Login Failed', 'Invalid mobile number or password');
-        }
-      };
-      
+  const handleLogin = () => {
+    if (!mobile || !password) {
+      Alert.alert('Missing Fields', 'Please enter both mobile number and password');
+      return;
+    }
+
+    if (mobile.length !== 10 || !/^\d+$/.test(mobile)) {
+      Alert.alert('Invalid Mobile', 'Enter a valid 10-digit mobile number');
+      return;
+    }
+
+    // Dummy login check
+    if (mobile === '1234567890' && password === '123') {
+      setIsLoggedIn(true); // ✅ Switches to MainStack automatically
+    } else {
+      Alert.alert('Login Failed', 'Invalid mobile number or password');
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -75,25 +69,15 @@ export default function LoginScreen({navigation}) {
           <Text style={styles.loginText}>Login</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
-  <Text style={styles.linkText}>Don't have an account? Sign up</Text>
-</TouchableOpacity>
-
+          <Text style={styles.linkText}>Don't have an account? Sign up</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#E8F5E9',
-  },
-  linkText: {
-    color: '#33691E',
-    marginTop: 10,
-    textAlign: 'center',
-    textDecorationLine: 'underline',
-  },  
+  safeArea: { flex: 1, backgroundColor: '#E8F5E9' },
   container: {
     padding: 24,
     backgroundColor: '#E8F5E9',
@@ -101,12 +85,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  title: {
-    fontSize: 26,
-    marginBottom: 30,
-    color: '#2E7D32',
-    fontWeight: 'bold',
-  },
+  title: { fontSize: 26, marginBottom: 30, color: '#2E7D32', fontWeight: 'bold' },
   input: {
     width: '90%',
     borderWidth: 2,
@@ -127,11 +106,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     paddingHorizontal: 10,
   },
-  passwordInput: {
-    flex: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 5,
-  },
+  passwordInput: { flex: 1, paddingVertical: 12, paddingHorizontal: 5 },
   loginBtn: {
     width: '90%',
     backgroundColor: '#43A047',
@@ -139,10 +114,11 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginTop: 10,
   },
-  loginText: {
-    color: 'white',
-    fontWeight: 'bold',
+  loginText: { color: 'white', fontWeight: 'bold', textAlign: 'center', fontSize: 16 },
+  linkText: {
+    color: '#33691E',
+    marginTop: 10,
     textAlign: 'center',
-    fontSize: 16,
+    textDecorationLine: 'underline',
   },
 });
