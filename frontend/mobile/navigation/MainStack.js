@@ -2,12 +2,12 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 // Screens after login
-import DashboardScreen from "../screens/auth/home/DashboardScreen";
-import NewsDetailScreen from "../screens/auth/news/NewsDetail";
-import WeatherDetailScreen from "../screens/auth/weather/WeatherDetailScreen";
-import AddCropScreen from '../screens/auth/crop/AddCropScreen';
-import FinancialOverviewScreen from '../screens/auth/crop/FinancialOverviewScreen';
-import AddExpenseScreen from '../screens/auth/crop/AddExpenseScreen';
+import DashboardScreen from "../screens/home/DashboardScreen";
+import NewsDetailScreen from "../screens/news/NewsDetail";
+import WeatherDetailScreen from "../screens/weather/WeatherDetailScreen";
+import AddCropScreen from '../screens/crop/AddCropScreen';
+import FinancialOverviewScreen from '../screens/crop/FinancialOverviewScreen';
+import AddExpenseScreen from '../screens/crop/AddExpenseScreen';
 
 const Stack = createNativeStackNavigator();
 

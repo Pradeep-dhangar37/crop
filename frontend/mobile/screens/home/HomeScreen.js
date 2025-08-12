@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, Platform, StatusBar, TouchableOpacity } from 'react-native';
-import WeatherCard from '../../../components/weather/WeatherCard';
+import WeatherCard from '../../components/weather/WeatherCard';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen({ mobile, navigation }) {

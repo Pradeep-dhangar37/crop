@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { newsData } from '../../../data/newsData';
-import NewsCard from '../../../components/NewsCard';
+import { newsData } from '../../data/newsData';
+import NewsCard from '../../components/NewsCard';
 
 const categories = ['All', 'Environment', 'Technology', 'Policy', 'Market'];
 

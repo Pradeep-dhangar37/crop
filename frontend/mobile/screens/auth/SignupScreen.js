@@ -18,7 +18,7 @@ export default function SignupScreen({navigation}) {
     name: '',
     mobile: '',
     password: '',
-    location: '',
+    // location: '',
     email: '',
     language: '',
   });
@@ -29,13 +29,13 @@ export default function SignupScreen({navigation}) {
   };
 
   const handleSubmit = () => {
-    if (!form.name || !form.mobile || !form.password || !form.location || !form.language) {
+    if (!form.name || !form.mobile || !form.password ||!form.language) {
       Alert.alert('Missing Fields', 'Please fill all required fields');
       return;
     }
-
-    console.log('Signup Data:', form);
-    Alert.alert('Success', 'Signed up successfully!');
+  
+    // Navigate to OTP Screen with form data
+    navigation.navigate('Otp', { formData: form });
   };
 
   return (
@@ -73,11 +73,11 @@ export default function SignupScreen({navigation}) {
           </TouchableOpacity>
         </View>
 
-        <TextInput
+        {/* <TextInput
           style={styles.input}
           placeholder="Location (e.g., Village, District)"
           onChangeText={(text) => handleChange('location', text)}
-        />
+        /> */}
         <TextInput
           style={styles.input}
           placeholder="Email (Optional)"

@@ -1,11 +1,11 @@
 // navigation/BottomTabNavigator.js
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import HomeScreen from '../screens/auth/home/HomeScreen';
+import HomeScreen from '../screens/home/HomeScreen';
 // import NewsScreen from '../screens/home/NewsScreen';
 import Icon from 'react-native-vector-icons/Ionicons';
-import NewsScreen from '../screens/auth/news/NewsScreen';
-import ProfileScreen from '../screens/auth/home/ProfileScreen';
+import NewsScreen from '../screens/news/NewsScreen';
+import ProfileScreen from '../screens/home/ProfileScreen';
 // import NewsScreen from '../screens/auth/news/NewsScreen';
 // import NewsScreen from '../screens/auth/home/NewsScreen';
 

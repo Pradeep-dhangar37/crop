@@ -8,7 +8,7 @@ import MainStack from './navigation/MainStack';
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   return (
     <NavigationContainer>
