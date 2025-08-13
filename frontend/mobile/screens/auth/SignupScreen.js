@@ -19,7 +19,7 @@ export default function SignupScreen({navigation}) {
     mobile: '',
     password: '',
     // location: '',
-    email: '',
+    // email: '',
     language: '',
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -28,14 +28,51 @@ export default function SignupScreen({navigation}) {
     setForm({ ...form, [key]: value });
   };
 
-  const handleSubmit = () => {
-    if (!form.name || !form.mobile || !form.password ||!form.language) {
+  const handleSubmit = async () => {
+    if (form.name.length > 50) return alert("Name must be 100 characters or less.");
+    if (!/^\d{10}$/.test(form.mobile)) return alert("Mobile number must be exactly 10 digits.");
+    if (form.password.length > 255) return alert("Password must be 255 characters or less.");
+    if (!form.name || !form.mobile || !form.password || !form.language) {
       Alert.alert('Missing Fields', 'Please fill all required fields');
       return;
     }
-  
-    // Navigate to OTP Screen with form data
-    navigation.navigate('Otp', { formData: form });
+    const mobileRegex = /^[6-9]\d{9}$/;
+    if (!mobileRegex.test(form.mobile)) {
+      Alert.alert('Invalid Mobile Number');
+      return;
+    }
+
+    try {
+      // Call backend API to send OTP
+      const response = await fetch('http://10.159.98.170:3000/api/users/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: form.name,
+          mobile: form.mobile,
+          password: form.password,
+          language: form.language
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Navigate to OTP Screen with form data
+        navigation.navigate('Otp', { 
+          formData: form, 
+          otpFromServer: data.otp,
+          mobile: form.mobile
+        });
+      } else {
+        Alert.alert('Error', data.message || 'Something went wrong');
+      }
+    } catch (error) {
+      console.error('Signup error:', error);
+      Alert.alert('Error', 'Network error. Please try again.');
+    }
   };
 
   return (
@@ -78,12 +115,12 @@ export default function SignupScreen({navigation}) {
           placeholder="Location (e.g., Village, District)"
           onChangeText={(text) => handleChange('location', text)}
         /> */}
-        <TextInput
+        {/* <TextInput
           style={styles.input}
           placeholder="Email (Optional)"
           keyboardType="email-address"
           onChangeText={(text) => handleChange('email', text)}
-        />
+        /> */}
         <Text style={styles.label}>Preferred Language</Text>
         {languages.map((lang) => (
           <TouchableOpacity

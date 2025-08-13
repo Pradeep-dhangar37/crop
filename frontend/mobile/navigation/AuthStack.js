@@ -6,12 +6,10 @@ import OtpScreen from '../screens/auth/OtpScreen';
 
 const Stack = createNativeStackNavigator();
 
-export default function AuthStack({ setIsLoggedIn }) {
+export default function AuthStack() {
   return (
     <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Login">
-        {(props) => <LoginScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
-      </Stack.Screen>
+      <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Signup" component={SignupScreen} />
       <Stack.Screen name="Otp" component={OtpScreen} />
     </Stack.Navigator>

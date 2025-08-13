@@ -1,7 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
+import { useUser } from '../../context/UserContext';
 
 export default function ProfileScreen() {
+  const { user, logout } = useUser();
   return (
     <View style={styles.container}>
       {/* Profile Image */}
@@ -11,62 +13,73 @@ export default function ProfileScreen() {
       />
 
       {/* User Name */}
-      <Text style={styles.name}>John Doe</Text>
+      <Text style={styles.name}>{user?.name || 'User'}</Text>
 
-      {/* Email or other info */}
-      <Text style={styles.email}>john.doe@example.com</Text>
+      {/* Mobile Number */}
+      <Text style={styles.email}>{user?.mobile || 'No mobile number'}</Text>
 
       {/* Buttons */}
       <TouchableOpacity style={styles.button}>
         <Text style={styles.buttonText}>Edit Profile</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={[styles.button, styles.logoutButton]}>
+      <TouchableOpacity
+        style={[styles.button, styles.logoutButton]}
+        onPress={() => {
+          Alert.alert(
+            'Logout',
+            'Are you sure you want to logout?',
+            [
+              { text: 'Cancel', style: 'cancel' },
+              { text: 'Logout', onPress: logout, style: 'destructive' }
+            ]
+          );
+        }}
+      >
         <Text style={styles.buttonText}>Logout</Text>
       </TouchableOpacity>
     </View>
   );
 }
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: '#f5f5f5',
-      padding: 20,
-    },
-    profileImage: {
-      width: 120,
-      height: 120,
-      borderRadius: 60,
-      marginBottom: 20,
-      borderWidth: 2,
-      borderColor: '#2E7D32',
-    },
-    name: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      color: '#2E7D32',
-      marginBottom: 5,
-    },
-    email: {
-      fontSize: 16,
-      color: '#555',
-      marginBottom: 30,
-    },
-    button: {
-      backgroundColor: '#2E7D32',
-      paddingVertical: 12,
-      paddingHorizontal: 30,
-      borderRadius: 25,
-      marginVertical: 10,
-    },
-    logoutButton: {
-      backgroundColor: '#c62828',
-    },
-    buttonText: {
-      color: '#fff',
-      fontSize: 16,
-    },
-  });
-  
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f5f5f5',
+    padding: 20,
+  },
+  profileImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    marginBottom: 20,
+    borderWidth: 2,
+    borderColor: '#2E7D32',
+  },
+  name: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#2E7D32',
+    marginBottom: 5,
+  },
+  email: {
+    fontSize: 16,
+    color: '#555',
+    marginBottom: 30,
+  },
+  button: {
+    backgroundColor: '#2E7D32',
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 25,
+    marginVertical: 10,
+  },
+  logoutButton: {
+    backgroundColor: '#c62828',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+});

@@ -7,15 +7,19 @@ import {
   StyleSheet,
   Alert,
   SafeAreaView,
+  ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useUser } from '../../context/UserContext';
 
-export default function LoginScreen({ setIsLoggedIn, navigation }) {
+export default function LoginScreen({ navigation }) {
   const [mobile, setMobile] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { login } = useUser();
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!mobile || !password) {
       Alert.alert('Missing Fields', 'Please enter both mobile number and password');
       return;
@@ -26,11 +30,40 @@ export default function LoginScreen({ setIsLoggedIn, navigation }) {
       return;
     }
 
-    // Dummy login check
-    if (mobile === '1234567890' && password === '123') {
-      setIsLoggedIn(true); // ✅ Switches to MainStack automatically
-    } else {
-      Alert.alert('Login Failed', 'Invalid mobile number or password');
+    setIsLoading(true);
+
+    try {
+      // Call backend API for login
+      const response = await fetch('http://10.159.98.170:3000/api/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          mobile: mobile,
+          password: password
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Store user data and token using context
+        const success = await login(data.user, data.token);
+        if (success) {
+          console.log('Login successful:', data);
+          // Navigation will be handled automatically by the context
+        } else {
+          Alert.alert('Error', 'Failed to save login data');
+        }
+      } else {
+        Alert.alert('Login Failed', data.message || 'Invalid mobile number or password');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      Alert.alert('Error', 'Network error. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -65,8 +98,16 @@ export default function LoginScreen({ setIsLoggedIn, navigation }) {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
-          <Text style={styles.loginText}>Login</Text>
+        <TouchableOpacity
+          style={[styles.loginBtn, isLoading && styles.disabledBtn]}
+          onPress={handleLogin}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text style={styles.loginText}>Login</Text>
+          )}
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
           <Text style={styles.linkText}>Don't have an account? Sign up</Text>
@@ -113,6 +154,10 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 12,
     marginTop: 10,
+    alignItems: 'center',
+  },
+  disabledBtn: {
+    backgroundColor: '#ccc',
   },
   loginText: { color: 'white', fontWeight: 'bold', textAlign: 'center', fontSize: 16 },
   linkText: {
