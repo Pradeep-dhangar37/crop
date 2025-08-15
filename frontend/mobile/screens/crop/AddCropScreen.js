@@ -8,6 +8,7 @@ export default function AddCropScreen({ navigation }) {
   const [selectedCrops, setSelectedCrops] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
   // Fetch crops from backend
   const fetchCrops = async () => {
@@ -33,13 +34,23 @@ export default function AddCropScreen({ navigation }) {
         const data = await res.json();
         console.log("Crops data:", data);
 
-        // Backend returns crop_id, crop_name, image_url
+        // Backend returns crop_id, crop_name, image_url, isSelected
         const formatted = data.crops.map(crop => ({
           id: crop.crop_id.toString(),
           name: crop.crop_name,
           image: crop.image_url
         }));
         setCrops(formatted);
+
+        // Set initially selected crops based on backend response
+        const initiallySelected = data.crops
+          .filter(crop => crop.isSelected)
+          .map(crop => ({
+            id: crop.crop_id.toString(),
+            name: crop.crop_name,
+            image: crop.image_url
+          }));
+        setSelectedCrops(initiallySelected);
         setError(null);
       } else {
         const errorData = await res.json().catch(() => ({ message: 'Unknown error' }));
@@ -74,6 +85,50 @@ export default function AddCropScreen({ navigation }) {
     setError(null);
     setLoading(true);
     fetchCrops();
+  };
+
+  const handleSubmit = async () => {
+    setSubmitting(true);
+    try {
+      const token = await AsyncStorage.getItem('token');
+
+      if (!token) {
+        Alert.alert("Authentication Error", "Please login again");
+        setSubmitting(false);
+        return;
+      }
+
+      const selectedCropIds = selectedCrops.map(crop => parseInt(crop.id));
+
+      const response = await fetch("http://10.159.98.170:3000/api/crops/update", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          selectedCropIds: selectedCropIds
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert("Success", "Your crops have been updated successfully!", [
+          {
+            text: 'OK',
+            onPress: () => navigation.navigate('Dashboard')
+          }
+        ]);
+      } else {
+        Alert.alert("Error", data.message || "Failed to update crops");
+      }
+    } catch (error) {
+      console.error("Submit error:", error);
+      Alert.alert("Network Error", "Please check your internet connection and try again");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const renderCrop = ({ item }) => {
@@ -129,6 +184,13 @@ export default function AddCropScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Select Your Crops</Text>
+          <Text style={styles.headerSubtitle}>
+            {selectedCrops.length} of {crops.length} crops selected
+          </Text>
+        </View>
 
         {/* Selected Crops */}
         {selectedCrops.length > 0 && (
@@ -154,10 +216,15 @@ export default function AddCropScreen({ navigation }) {
 
         {/* Add Button */}
         <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => navigation.navigate('Dashboard')}
+          style={[styles.addButton, submitting && styles.disabledButton]}
+          onPress={handleSubmit}
+          disabled={submitting}
         >
-          <Text style={styles.addButtonText}>Add</Text>
+          {submitting ? (
+            <ActivityIndicator color="white" size="small" />
+          ) : (
+            <Text style={styles.addButtonText}>Save Selected Crops</Text>
+          )}
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -172,6 +239,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20
+  },
+  header: {
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#004D40',
+    marginBottom: 5,
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    color: '#666',
   },
   loadingText: {
     marginTop: 10,
@@ -224,6 +305,9 @@ const styles = StyleSheet.create({
     padding: 14,
     borderRadius: 10,
     alignItems: 'center',
+  },
+  disabledButton: {
+    backgroundColor: '#ccc',
   },
   addButtonText: { color: 'white', fontSize: 18, fontWeight: 'bold' },
 });

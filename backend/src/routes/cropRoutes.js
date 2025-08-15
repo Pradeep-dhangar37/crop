@@ -1,12 +1,12 @@
 import express from "express";
-import { getAllCrops, addUserCrops } from "../controllers/cropController.js";
+import { getAllCrops, updateUserCrops } from "../controllers/cropController.js";
 import { authenticateToken } from "../middleware/auth.js";
 
 const router = express.Router();
 
 // Protected route
 router.get("/", authenticateToken, getAllCrops);
-router.post("/", authenticateToken, addUserCrops);
+router.post("/update", authenticateToken, updateUserCrops);
 
 export default router;
 
