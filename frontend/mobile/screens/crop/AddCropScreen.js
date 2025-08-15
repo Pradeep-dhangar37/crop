@@ -1,16 +1,62 @@
-import React, { useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, SafeAreaView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, SafeAreaView, ActivityIndicator, Alert } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
-
-const dummyCrops = [
-  { id: '1', name: 'Wheat', image: 'https://cdn-icons-png.flaticon.com/512/415/415682.png' },
-  { id: '2', name: 'Rice', image: 'https://cdn-icons-png.flaticon.com/512/415/415733.png' },
-  { id: '3', name: 'Corn', image: 'https://cdn-icons-png.flaticon.com/512/415/415740.png' },
-  { id: '4', name: 'Tomato', image: 'https://cdn-icons-png.flaticon.com/512/415/415733.png' },
-];
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function AddCropScreen({ navigation }) {
+  const [crops, setCrops] = useState([]);
   const [selectedCrops, setSelectedCrops] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch crops from backend
+  const fetchCrops = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+
+      if (!token) {
+        console.error("No token found");
+        setError("Authentication Error");
+        setLoading(false);
+        return;
+      }
+
+      const res = await fetch("http://10.159.98.170:3000/api/crops", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        console.log("Crops data:", data);
+
+        // Backend returns crop_id, crop_name, image_url
+        const formatted = data.crops.map(crop => ({
+          id: crop.crop_id.toString(),
+          name: crop.crop_name,
+          image: crop.image_url
+        }));
+        setCrops(formatted);
+        setError(null);
+      } else {
+        const errorData = await res.json().catch(() => ({ message: 'Unknown error' }));
+        console.error("Error fetching crops:", errorData.message);
+        setError(errorData.message || "Failed to fetch crops");
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
+      setError("Network Error - Please check your internet connection");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCrops();
+  }, []);
 
   const toggleCrop = (crop) => {
     if (selectedCrops.some(item => item.id === crop.id)) {
@@ -22,6 +68,12 @@ export default function AddCropScreen({ navigation }) {
 
   const removeCrop = (id) => {
     setSelectedCrops(selectedCrops.filter(item => item.id !== id));
+  };
+
+  const retryFetch = () => {
+    setError(null);
+    setLoading(true);
+    fetchCrops();
   };
 
   const renderCrop = ({ item }) => {
@@ -50,10 +102,34 @@ export default function AddCropScreen({ navigation }) {
     </View>
   );
 
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.centerContainer}>
+          <ActivityIndicator size="large" color="#004D40" />
+          <Text style={styles.loadingText}>Loading crops...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (error) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.centerContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={retryFetch}>
+            <Text style={styles.retryButtonText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        
+
         {/* Selected Crops */}
         {selectedCrops.length > 0 && (
           <View style={styles.selectedContainer}>
@@ -69,7 +145,7 @@ export default function AddCropScreen({ navigation }) {
 
         {/* Crop List */}
         <FlatList
-          data={dummyCrops}
+          data={crops}
           keyExtractor={(item) => item.id}
           renderItem={renderCrop}
           contentContainerStyle={styles.listContainer}
@@ -89,11 +165,39 @@ export default function AddCropScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#F8FFF8',  marginTop: 30},
+  safeArea: { flex: 1, backgroundColor: '#F8FFF8', marginTop: 30 },
   container: { flex: 1, padding: 16 },
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#004D40'
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#d32f2f',
+    textAlign: 'center',
+    marginBottom: 20
+  },
+  retryButton: {
+    backgroundColor: '#004D40',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 
   selectedContainer: { marginBottom: 15 },
-  selectedItem: { alignItems: 'center', marginRight: 20, position: 'relative', marginTop: 10},
+  selectedItem: { alignItems: 'center', marginRight: 20, position: 'relative', marginTop: 10 },
   selectedImage: { width: 60, height: 60, borderRadius: 30 },
   removeButton: { position: 'absolute', top: -5, right: -5, backgroundColor: '#fff', borderRadius: 12 },
   selectedCropName: { fontSize: 12, marginTop: 4, color: '#004D40' },
