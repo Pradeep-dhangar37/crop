@@ -10,6 +10,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+// import { BASE_IP } from "@env";
 
 const languages = ['Hindi', 'English'];
 
@@ -44,7 +45,7 @@ export default function SignupScreen({navigation}) {
 
     try {
       // Call backend API to send OTP
-      const response = await fetch('http://10.159.98.170:3000/api/users/signup', {
+      const response = await fetch(`http://192.168.1.25:3000/api/users/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

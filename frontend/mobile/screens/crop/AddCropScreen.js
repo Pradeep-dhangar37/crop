@@ -2,8 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, SafeAreaView, ActivityIndicator, Alert } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from "expo-constants";
+
+const IP = Constants.expoConfig.extra.BASE_IP;
+// import { BASE_IP } from "@env";
+
 
 export default function AddCropScreen({ navigation }) {
+  // const IP = process.env.BASE_IP;
   const [crops, setCrops] = useState([]);
   const [selectedCrops, setSelectedCrops] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,8 +27,9 @@ export default function AddCropScreen({ navigation }) {
         setLoading(false);
         return;
       }
-
-      const res = await fetch("http://10.159.98.170:3000/api/crops", {
+      // 10.143.125.170
+      const res = await fetch(`http://${IP}:3000/api/crops`, {
+       
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -32,7 +39,7 @@ export default function AddCropScreen({ navigation }) {
 
       if (res.ok) {
         const data = await res.json();
-        console.log("Crops data:", data);
+        // console.log("Crops data:", data);
 
         // Backend returns crop_id, crop_name, image_url, isSelected
         const formatted = data.crops.map(crop => ({
@@ -100,7 +107,7 @@ export default function AddCropScreen({ navigation }) {
 
       const selectedCropIds = selectedCrops.map(crop => parseInt(crop.id));
 
-      const response = await fetch("http://10.159.98.170:3000/api/crops/update", {
+      const response = await fetch(`http://${IP}:3000/api/crops/update`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

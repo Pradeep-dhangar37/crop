@@ -1,11 +1,53 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, Platform, StatusBar, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Platform, StatusBar, TouchableOpacity } from 'react-native';
 import WeatherCard from '../../components/weather/WeatherCard';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+// import { BASE_IP } from "@env";
+import Constants from "expo-constants";
 
-export default function HomeScreen({ mobile, navigation }) {
-  const userName = 'John Doe';
-  const estimatedProfit = '₹ 25,000';
+const IP = Constants.expoConfig.extra.BASE_IP;
+
+
+
+export default function HomeScreen({ navigation }) {
+// const IP = process.env.BASE_IP;
+
+  const [totalProfit, setTotalProfit] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProfit = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        if (!token) {
+          setError("Authentication Error - Please login again");
+          setLoading(false);
+          return;
+        }
+        const res = await fetch(`http://${IP}:3000/api/crops/profit`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}` 
+          }
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          setTotalProfit(data.totalProfit);
+        } else {
+          console.error("Error fetching profit:", data.message || data.error);
+        }
+      } catch (error) {
+        console.error("Network error fetching profit:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfit();
+  }, []);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -28,8 +70,10 @@ export default function HomeScreen({ mobile, navigation }) {
           </TouchableOpacity>
 
           {/* Profit Estimate Box */}
-          <TouchableOpacity style={styles.gridBoxFull} onPress={()=> navigation.navigate('FinancialOverview')}>
-            <Text style={styles.profitValue}>{estimatedProfit}</Text>
+          <TouchableOpacity style={styles.gridBoxFull} onPress={() => navigation.navigate('FinancialOverview')}>
+            <Text style={styles.profitValue}>
+              {loading ? "Loading..." : totalProfit !== null ? `₹ ${totalProfit}` : "No data"}
+            </Text>
             <Text style={styles.gridTitle}>Estimate your Field Profit</Text>
           </TouchableOpacity>
         </View>
@@ -41,7 +85,7 @@ export default function HomeScreen({ mobile, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FFF8', 
+    backgroundColor: '#F8FFF8',
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   safeArea: {

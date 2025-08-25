@@ -1,6 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
 import { useUser } from '../../context/UserContext';
+import Constants from "expo-constants";
+
+const IP = Constants.expoConfig.extra.BASE_IP;
 
 export default function ProfileScreen() {
   const { user, logout } = useUser();

@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 import userRoutes from "./src/routes/userRoutes.js"
 import cors from "cors";
 import cropRoutes from "./src/routes/cropRoutes.js"
+import expenseRoutes from "./src/routes/expenseRoutes.js"
+
 
 dotenv.config();
 const app = express();
@@ -23,5 +25,7 @@ app.use((req, res, next) => {
 
 app.use("/api/users", userRoutes);
 app.use("/api/crops", cropRoutes);
+app.use("/api/expense", expenseRoutes);
+
 
 export default app;

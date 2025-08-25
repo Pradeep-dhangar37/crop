@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Constants from "expo-constants";
+
+const IP = Constants.expoConfig.extra.BASE_IP;
 
 export default function OtpScreen({ route, navigation }) {
-  const { formData, otpFromServer, mobile } = route.params; // signup form data passed from previous screen
+  const IP = process.env.BASE_IP;
+  const { formData, otpFromServer, mobile } = route.params; 
   const [otp, setOtp] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -17,7 +21,7 @@ export default function OtpScreen({ route, navigation }) {
 
     try {
       // Call backend API to verify OTP
-      const response = await fetch('http://10.159.98.170:3000/api/users/verify-otp', {
+      const response = await fetch(`http://${IP}:3000/api/users/verify-otp`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

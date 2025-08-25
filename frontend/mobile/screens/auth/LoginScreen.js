@@ -11,8 +11,11 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useUser } from '../../context/UserContext';
+// import { BASE_IP } from "@env";
+
 
 export default function LoginScreen({ navigation }) {
+  const IP = process.env.BASE_IP;
   const [mobile, setMobile] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -34,7 +37,7 @@ export default function LoginScreen({ navigation }) {
 
     try {
       // Call backend API for login
-      const response = await fetch('http://10.159.98.170:3000/api/users/login', {
+      const response = await fetch(`http://${IP}:3000/api/users/login`, { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
